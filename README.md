@@ -11,7 +11,9 @@ Assigned projects by Codsoft AI internshio
 <a href="https://book-recommender.streamlit.app/">Visit App</a>
 <img src="https://github.com/tubakhxn/CODSOFT/blob/main/images/book.png">
 <img src="https://github.com/tubakhxn/CODSOFT/blob/main/images/book2.png">
-
+-
+3) Image Captioning
+<img src="https://github.com/tubakhxn/CODSOFT/blob/main/image%20captioning/output/demo.gif">
 
 
 
