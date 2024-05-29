@@ -25,3 +25,6 @@ $env:FLASK_App='index.py'
 $env:FLASK_ENV='development'
 flask run
 -
+-
+5) Face Detection 
+code: https://github.com/tubakhxn/CODSOFT/tree/main/face%20detection
