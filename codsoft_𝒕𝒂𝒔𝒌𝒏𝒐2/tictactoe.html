@@ -1,1 +1,226 @@
-<body></body>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Tic Tac Toe</title>
+<style>
+  .main {
+    width: 100vw;
+    height: 100vh;
+    background: linear-gradient(#f7aeb7, #ffcccc, #ffeee6);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+
+  table {
+    position: absolute;
+    left: 50%;
+    margin-left: -90px;
+    top: 10%;
+    z-index: 1;
+  }
+
+  td {
+    border: 10px solid #333;
+    height: 60px;
+    width: 60px;
+    visibility: hidden;
+    text-align: center;
+    font-size: 40px;
+    cursor: pointer;
+  }
+
+  .options {
+    height: 100px;
+    width: 220px;
+    z-index: 2;
+  }
+
+  .dots {
+    display: inline-block;
+    background: white;
+    height: 80px;
+    width: 80px;
+    float: left;
+    border: 10px solid #333;
+  }
+
+  .dots2 {
+    display: inline-block;
+    background: #333;
+    height: 80px;
+    width: 80px;
+    float: right;
+  }
+
+  p {
+    top: 10%;
+    font-size: 500%;
+    background: transparent;
+  }
+</style>
+</head>
+<body>
+<div class="main">
+  <table>
+    <tr>
+      <td class="cell" id="0"></td>
+      <td class="cell" id="1"></td>
+      <td class="cell" id="2"></td>
+    </tr>
+    <tr>
+      <td class="cell" id="3"></td>
+      <td class="cell" id="4"></td>
+      <td class="cell" id="5"></td>
+    </tr>
+    <tr>
+      <td class="cell" id="6"></td>
+      <td class="cell" id="7"></td>
+      <td class="cell" id="8"></td>
+    </tr>
+  </table>
+  <p>choose</p>
+  <div class="options">
+    <div class="dots"></div>
+    <div class="dots2"></div>
+  </div>
+</div>
+
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+<script>
+  $(document).ready(function() {
+    $(".dots").click(function() {
+      $(".options, p").css("visibility", "hidden");
+      $("td").css("visibility", "visible");
+      huPlayer = "X";
+      aiPlayer = "O";
+      console.log("You are X");
+    });
+    $(".dots2").click(function() {
+      $(".options, p").css("visibility", "hidden");
+      $("td").css("visibility", "visible");
+      huPlayer = "O";
+      aiPlayer = "X";
+      console.log("You are O");
+      // AI makes the first move
+      var index = minimax(board, aiPlayer).index;
+      var selector = "#" + index;
+      $(selector).text(aiPlayer);
+      board[index] = aiPlayer;
+    });
+
+    $("td").click(function() {
+      if (huPlayer === "X") {
+        move(this, huPlayer);
+        // AI's turn after human's move
+        var index = minimax(board, aiPlayer).index;
+        var selector = "#" + index;
+        $(selector).text(aiPlayer);
+        board[index] = aiPlayer;
+      }
+    });
+  });
+
+  var board = [0, 1, 2, 3, 4, 5, 6, 7, 8];
+  var huPlayer, aiPlayer;
+
+  function move(element, player) {
+    var id = element.id;
+    if (board[id] != "X" && board[id] != "O") {
+      $(element).text(player);
+      board[id] = player;
+      if (winning(board, player)) {
+        setTimeout(function() {
+          alert("You WIN");
+          reset();
+        }, 500);
+        return;
+      } else if (round > 8) {
+        setTimeout(function() {
+          alert("TIE");
+          reset();
+        }, 500);
+        return;
+      }
+    }
+  }
+
+  function reset() {
+    round = 0;
+    board = [0, 1, 2, 3, 4, 5, 6, 7, 8];
+    $("td").text("");
+  }
+
+  function minimax(reboard, player) {
+    var array = avail(reboard);
+    if (winning(reboard, huPlayer)) {
+      return { score: -10 };
+    } else if (winning(reboard, aiPlayer)) {
+      return { score: 10 };
+    } else if (array.length === 0) {
+      return { score: 0 };
+    }
+
+    var moves = [];
+    for (var i = 0; i < array.length; i++) {
+      var move = {};
+      move.index = reboard[array[i]];
+      reboard[array[i]] = player;
+
+      if (player == aiPlayer) {
+        var g = minimax(reboard, huPlayer);
+        move.score = g.score;
+      } else {
+        var g = minimax(reboard, aiPlayer);
+        move.score = g.score;
+      }
+      reboard[array[i]] = move.index;
+      moves.push(move);
+    }
+
+    var bestMove;
+    if (player === aiPlayer) {
+      var bestScore = -10000;
+      for (var i = 0; i < moves.length; i++) {
+        if (moves[i].score > bestScore) {
+          bestScore = moves[i].score;
+          bestMove = i;
+        }
+      }
+    } else {
+      var bestScore = 10000;
+      for (var i = 0; i < moves.length; i++) {
+        if (moves[i].score < bestScore) {
+          bestScore = moves[i].score;
+          bestMove = i;
+        }
+      }
+    }
+    return moves[bestMove];
+  }
+
+  //available spots
+  function avail(reboard) {
+    return reboard.filter(s => s != "X" && s != "O");
+  }
+
+  // winning combinations
+  function winning(board, player) {
+    if (
+      (board[0] == player && board[1] == player && board[2] == player) ||
+      (board[3] == player && board[4] == player && board[5] == player) ||
+      (board[6] == player && board[7] == player && board[8] == player) ||
+      (board      [0] == player && board[4] == player && board[8] == player) ||
+      (board[2] == player && board[4] == player && board[6] == player)
+    ) {
+      return true;
+    } else {
+      return false;
+    }
+  }
+</script>
+</body>
+</html>
+
